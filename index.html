@@ -4,9 +4,28 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Kurdish Codenames</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Kurdish Codenames</h1>
-  <p>الموقع شغال 👍</p>
+  <main class="wrap">
+    <header class="top">
+      <h1>Kurdish Codenames</h1>
+      <div class="controls">
+        <button id="newGame">New Game</button>
+        <label class="toggle">
+          <input type="checkbox" id="spymaster">
+          <span>Spymaster</span>
+        </label>
+      </div>
+      <div class="scores">
+        <span class="red">Red: <b id="redLeft">0</b></span>
+        <span class="blue">Blue: <b id="blueLeft">0</b></span>
+      </div>
+    </header>
+
+    <section id="grid" class="grid"></section>
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>
