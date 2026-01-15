@@ -1,53 +1,39 @@
 *{box-sizing:border-box}
+:root{
+  --bg:#070a12;
+  --card:#101529;
+  --card2:#0d1224;
+  --stroke:rgba(255,255,255,.08);
+  --text:#eaf0ff;
+  --muted:rgba(234,240,255,.65);
+  --red:#ff4d4d;
+  --blue:#4d7dff;
+  --neutral:#a9b0c7;
+  --assassin:#000000;
+  --accent:#7b6dff;
+  --shadow:0 18px 50px rgba(0,0,0,.55);
+}
+
+html,body{height:100%}
 body{
   margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#0b0f19;
-  color:#fff;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
 }
-.wrap{width:min(1100px,94vw)}
-.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
-h1{margin:0;font-size:32px}
-.controls{display:flex;gap:10px;align-items:center}
-button{
-  padding:10px 14px;
-  border:0;border-radius:10px;
-  background:#6d5efc;color:#fff;font-weight:700;cursor:pointer
-}
-.toggle{display:flex;gap:6px;align-items:center}
-.scores{display:flex;gap:12px}
-.red{color:#ff4d4d}
-.blue{color:#4d7dff}
 
-.grid{
-  margin-top:16px;
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:10px;
+.bg{
+  position:fixed; inset:0;
+  background:
+    radial-gradient(900px 500px at 20% 20%, rgba(123,109,255,.25), transparent 60%),
+    radial-gradient(900px 600px at 80% 30%, rgba(77,125,255,.18), transparent 55%),
+    radial-gradient(900px 600px at 60% 90%, rgba(255,77,77,.12), transparent 55%);
+  filter: blur(0px);
+  pointer-events:none;
 }
-.card{
-  min-height:80px;
-  border-radius:14px;
-  background:#1a1f33;
-  border:1px solid #2a2f4a;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  cursor:pointer;
-  user-select:none;
-  text-align:center;
-  padding:8px;
-}
-.card.revealed.red{background:#ff4d4d}
-.card.revealed.blue{background:#4d7dff}
-.card.revealed.neutral{background:#888}
-.card.revealed.assassin{background:#000}
-.spymaster .card.red:not(.revealed){outline:2px solid #ff4d4d}
-.spymaster .card.blue:not(.revealed){outline:2px solid #4d7dff}
-.spymaster .card.neutral:not(.revealed){outline:2px solid #aaa}
-.spymaster .card.assassin:not(.revealed){outline:2px solid #000}
+
+.app{
+  width:min(1180px, 94vw);
+ 
+
