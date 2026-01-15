@@ -1,4 +1,4 @@
-// Kurdish Codenames — full rules-ish: Assassin = lose, Clue+Number guesses, End Turn, Reset board.
+// Kurdish Codenames (Single-device mode) + Lobby: Nickname / Team / Role
 const WORDS = [
   "نان","ئاو","خانوو","بازاڕ","رێگا","کلیل","هاوڕێ","دوژمن","منداڵ","افرەت",
   "پیاو","سەرباز","شار","گوند","قوتابخانە","شاخ","ڕوبار","ترس","هێز","هیوا",
@@ -10,11 +10,95 @@ const WORDS = [
   "اوێنە","دەرگا","ماسک","دیوار","زنجیرە","برین"
 ];
 
-// UI
+// ---------- LOBBY UI ----------
+const lobby = document.getElementById("lobby");
+const app = document.getElementById("app");
+
+const nickInput = document.getElementById("nick");
+const joinBtn = document.getElementById("join");
+const quickStartBtn = document.getElementById("quickStart");
+
+const segBtns = Array.from(document.querySelectorAll(".segBtn"));
+
+let profile = {
+  nick: "",
+  team: "red",
+  role: "operative"
+};
+
+function loadProfile(){
+  try{
+    const raw = localStorage.getItem("kc_profile");
+    if(!raw) return;
+    const p = JSON.parse(raw);
+    if(p && typeof p === "object"){
+      profile = {
+        nick: (p.nick || "").toString().slice(0,18),
+        team: p.team === "blue" ? "blue" : "red",
+        role: p.role === "spymaster" ? "spymaster" : "operative"
+      };
+    }
+  }catch{}
+}
+
+function saveProfile(){
+  localStorage.setItem("kc_profile", JSON.stringify(profile));
+}
+
+function setActiveButtons(){
+  segBtns.forEach(b=>{
+    const t = b.dataset.team;
+    const r = b.dataset.role;
+    const active = (t && t === profile.team) || (r && r === profile.role);
+    b.classList.toggle("active", !!active);
+  });
+}
+
+segBtns.forEach(b=>{
+  b.addEventListener("click", ()=>{
+    if(b.dataset.team){
+      profile.team = b.dataset.team === "blue" ? "blue" : "red";
+    }
+    if(b.dataset.role){
+      profile.role = b.dataset.role === "spymaster" ? "spymaster" : "operative";
+    }
+    setActiveButtons();
+  });
+});
+
+function openLobby(){
+  app.classList.add("hidden");
+  lobby.classList.remove("hidden");
+  nickInput.value = profile.nick || "";
+  setActiveButtons();
+}
+
+function closeLobby(){
+  lobby.classList.add("hidden");
+  app.classList.remove("hidden");
+}
+
+function joinGame({quick=false} = {}){
+  const nick = (nickInput.value || "").trim();
+  profile.nick = nick || "Player";
+  if(quick){
+    profile.team = "red";
+    profile.role = "operative";
+  }
+  saveProfile();
+  applyProfileToGameUI();
+  closeLobby();
+  // start or re-render
+  if(!state) newGame();
+  render();
+}
+
+// ---------- GAME UI ----------
 const grid = document.getElementById("grid");
 const newGameBtn = document.getElementById("newGame");
 const resetBoardBtn = document.getElementById("resetBoard");
 const spymasterToggle = document.getElementById("spymaster");
+const changeProfileBtn = document.getElementById("changeProfile");
 
 const redLeftEl = document.getElementById("redLeft");
 const blueLeftEl = document.getElementById("blueLeft");
@@ -31,6 +115,10 @@ const endTurnBtn = document.getElementById("endTurn");
 const clueTextEl = document.getElementById("clueText");
 const guessesLeftEl = document.getElementById("guessesLeft");
 
+const whoNick = document.getElementById("whoNick");
+const whoTeam = document.getElementById("whoTeam");
+const whoRole = document.getElementById("whoRole");
+
 // Overlay
 const overlay = document.getElementById("overlay");
 const resultTitle = document.getElementById("resultTitle");
@@ -39,6 +127,21 @@ const playAgain = document.getElementById("playAgain");
 const closeOverlay = document.getElementById("closeOverlay");
 
 let state = null;
+
+function applyProfileToGameUI(){
+  whoNick.textContent = profile.nick;
+  whoTeam.textContent = `TEAM: ${profile.team.toUpperCase()}`;
+  whoRole.textContent = `ROLE: ${profile.role.toUpperCase()}`;
+
+  // Spymaster switch behavior:
+  if(profile.role === "spymaster"){
+    spymasterToggle.checked = true;
+    spymasterToggle.disabled = true; // spymaster always sees colors
+  }else{
+    spymasterToggle.checked = false;
+    spymasterToggle.disabled = false;
+  }
+}
 
 function shuffle(arr){
   for(let i = arr.length - 1; i > 0; i--){
@@ -52,7 +155,6 @@ function uniqueWords(){
   return [...new Set(pool)];
 }
 
-// Roles: 9 starter team, 8 other, 7 neutral, 1 assassin (classic)
 function makeRoles(starter){
   const roles = [];
   const starterCount = 9;
@@ -72,10 +174,7 @@ function showOverlay(title, text){
   resultText.textContent = text;
   overlay.classList.remove("hidden");
 }
-
-function hideOverlay(){
-  overlay.classList.add("hidden");
-}
+function hideOverlay(){ overlay.classList.add("hidden"); }
 
 function setTurnPills(){
   turnTeamEl.textContent = state.turn.toUpperCase();
@@ -101,20 +200,16 @@ function resetClue(){
 }
 
 function setClue(){
+  if(state.gameOver) return;
   const clue = (clueInput.value || "").trim();
   const n = Number(numInput.value);
-
   if(!clue || !Number.isFinite(n) || n < 0){
     alert("Enter a clue and a valid number.");
     return;
   }
-
   state.clue = clue;
   state.number = n;
-
-  // Classic rule: guesses = number + 1
-  state.guessesLeft = n + 1;
-
+  state.guessesLeft = n + 1; // classic
   clueTextEl.textContent = `${clue} / ${n}`;
   guessesLeftEl.textContent = String(state.guessesLeft);
 }
@@ -131,10 +226,8 @@ function reveal(i){
   if(state.revealed[i]) return;
 
   state.revealed[i] = true;
-
   const role = state.roles[i];
 
-  // Assassin = instant lose
   if(role === "assassin"){
     state.gameOver = true;
     render();
@@ -142,46 +235,32 @@ function reveal(i){
     return;
   }
 
-  // Count left
   if(role === "red") state.left.red--;
   if(role === "blue") state.left.blue--;
   if(role === "neutral") state.left.neutral--;
 
-  // Win check
   if(state.left.red === 0){
-    state.gameOver = true;
-    render();
+    state.gameOver = true; render();
     showOverlay("🏆 RED WINS", "Red team found all their words.");
     return;
   }
   if(state.left.blue === 0){
-    state.gameOver = true;
-    render();
+    state.gameOver = true; render();
     showOverlay("🏆 BLUE WINS", "Blue team found all their words.");
     return;
   }
 
-  // Guess logic (only if clue set)
   if(state.guessesLeft > 0){
     state.guessesLeft--;
     guessesLeftEl.textContent = String(state.guessesLeft);
   }
 
-  // If clicked a wrong color OR neutral, turn ends immediately (classic)
   const wrong =
     (state.turn === "red" && role !== "red") ||
     (state.turn === "blue" && role !== "blue");
 
-  if(wrong){
-    endTurn(); // will render + reset clue
-    return;
-  }
-
-  // If guesses used up, force end turn
-  if(state.guessesLeft === 0){
-    endTurn();
-    return;
-  }
+  if(wrong){ endTurn(); return; }
+  if(state.guessesLeft === 0){ endTurn(); return; }
 
   render();
 }
@@ -193,14 +272,11 @@ function render(){
   updateCounts();
 
   grid.innerHTML = "";
-
   state.words.forEach((w,i)=>{
     const card = document.createElement("div");
     const role = state.roles[i];
-
     card.className = `card ${role}${state.revealed[i] ? " revealed" : ""}`;
     card.textContent = w;
-
     card.onclick = () => reveal(i);
     grid.appendChild(card);
   });
@@ -209,8 +285,6 @@ function render(){
 function newGame(){
   const pool = uniqueWords();
   shuffle(pool);
-
-  // ensure at least 25
   if(pool.length < 25){
     alert("Need at least 25 unique words in WORDS list.");
     return;
@@ -256,6 +330,9 @@ function resetSameBoard(){
 }
 
 // Events
+joinBtn.addEventListener("click", ()=>joinGame());
+quickStartBtn.addEventListener("click", ()=>joinGame({quick:true}));
+
 newGameBtn.addEventListener("click", () => { hideOverlay(); newGame(); });
 resetBoardBtn.addEventListener("click", () => resetSameBoard());
 
@@ -263,9 +340,11 @@ setClueBtn.addEventListener("click", () => setClue());
 endTurnBtn.addEventListener("click", () => endTurn());
 
 spymasterToggle.addEventListener("change", () => render());
+changeProfileBtn.addEventListener("click", () => openLobby());
 
 playAgain.addEventListener("click", () => { hideOverlay(); newGame(); });
 closeOverlay.addEventListener("click", () => hideOverlay());
 
-// Start
-newGame();
+// Boot
+loadProfile();
+openLobby(); // show lobby first
