@@ -32,4 +32,66 @@
       <div class="turnBox">
         <div class="turnLine">
           <span class="label">Turn:</span>
-          <span id="turnTeam" class="pi
+          <span id="turnTeam" class="pill">—</span>
+          <span class="label">Starter:</span>
+          <span id="starterTeam" class="pill muted">—</span>
+        </div>
+
+        <div class="scores">
+          <div class="score red">Red left: <b id="redLeft">0</b></div>
+          <div class="score blue">Blue left: <b id="blueLeft">0</b></div>
+          <div class="score neutral">Neutral: <b id="neutralLeft">0</b></div>
+          <div class="score assassin">Assassin: <b>1</b></div>
+        </div>
+      </div>
+
+      <div class="clueBox">
+        <div class="clueRow">
+          <div class="field">
+            <label>Clue</label>
+            <input id="clueInput" type="text" placeholder="مثال: ئاو / شاخ / جنگ ..." />
+          </div>
+
+          <div class="field small">
+            <label>#</label>
+            <input id="numInput" type="number" min="0" max="9" value="1" />
+          </div>
+
+          <button id="setClue" class="btn secondary">Set Clue</button>
+          <button id="endTurn" class="btn danger">End Turn</button>
+        </div>
+
+        <div class="clueStatus">
+          <div class="statusItem">
+            <span class="label">Current clue:</span>
+            <span id="clueText" class="pill muted">—</span>
+          </div>
+          <div class="statusItem">
+            <span class="label">Guesses left:</span>
+            <span id="guessesLeft" class="pill">—</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="grid" class="grid"></section>
+
+    <div id="overlay" class="overlay hidden">
+      <div class="modal">
+        <h2 id="resultTitle">Game Over</h2>
+        <p id="resultText">—</p>
+        <div class="modalActions">
+          <button id="playAgain" class="btn primary">New Game</button>
+          <button id="closeOverlay" class="btn ghost">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <small>Tip: Spymaster shows colors. Players should keep it OFF.</small>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
