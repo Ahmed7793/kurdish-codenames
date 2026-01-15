@@ -1,18 +1,53 @@
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
   background:#0b0f19;
-  color:white;
+  color:#fff;
   min-height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
 }
-
-h1{
-  font-size:36px;
+.wrap{width:min(1100px,94vw)}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+h1{margin:0;font-size:32px}
+.controls{display:flex;gap:10px;align-items:center}
+button{
+  padding:10px 14px;
+  border:0;border-radius:10px;
+  background:#6d5efc;color:#fff;font-weight:700;cursor:pointer
 }
+.toggle{display:flex;gap:6px;align-items:center}
+.scores{display:flex;gap:12px}
+.red{color:#ff4d4d}
+.blue{color:#4d7dff}
 
-p{
-  font-size:18px;
+.grid{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
 }
+.card{
+  min-height:80px;
+  border-radius:14px;
+  background:#1a1f33;
+  border:1px solid #2a2f4a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  cursor:pointer;
+  user-select:none;
+  text-align:center;
+  padding:8px;
+}
+.card.revealed.red{background:#ff4d4d}
+.card.revealed.blue{background:#4d7dff}
+.card.revealed.neutral{background:#888}
+.card.revealed.assassin{background:#000}
+.spymaster .card.red:not(.revealed){outline:2px solid #ff4d4d}
+.spymaster .card.blue:not(.revealed){outline:2px solid #4d7dff}
+.spymaster .card.neutral:not(.revealed){outline:2px solid #aaa}
+.spymaster .card.assassin:not(.revealed){outline:2px solid #000}
