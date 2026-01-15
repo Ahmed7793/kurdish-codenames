@@ -10,21 +10,74 @@
 <body>
   <div class="bg"></div>
 
-  <main class="app">
+  <!-- LOBBY -->
+  <div id="lobby" class="lobby">
+    <div class="lobbyCard">
+      <div class="brand">
+        <div class="logoDot"></div>
+        <div>
+          <h1>Kurdish Codenames</h1>
+          <p>Choose nickname, team, role — then join.</p>
+        </div>
+      </div>
+
+      <div class="lobbyGrid">
+        <div class="field">
+          <label>Nickname</label>
+          <input id="nick" type="text" placeholder="Ahmed" maxlength="18" />
+        </div>
+
+        <div class="field">
+          <label>Team</label>
+          <div class="segmented" role="group" aria-label="Team">
+            <button type="button" class="segBtn" data-team="red">Red</button>
+            <button type="button" class="segBtn" data-team="blue">Blue</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Role</label>
+          <div class="segmented" role="group" aria-label="Role">
+            <button type="button" class="segBtn" data-role="operative">Operative</button>
+            <button type="button" class="segBtn" data-role="spymaster">Spymaster</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="lobbyActions">
+        <button id="join" class="btn primary big">Join Game</button>
+        <button id="quickStart" class="btn ghost">Quick Start (Operative)</button>
+      </div>
+
+      <div class="note">
+        <b>Note:</b> This is “single-device mode” (no real-time sync between players) because GitHub Pages has no backend.
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <main id="app" class="app hidden">
     <header class="header">
       <div class="title">
-        <h1>Kurdish Codenames</h1>
-        <p class="sub">Codenames بە شێوەی یارییەکەی ڕەسەن</p>
+        <div class="who">
+          <span id="whoNick" class="pill">—</span>
+          <span id="whoTeam" class="pill muted">—</span>
+          <span id="whoRole" class="pill muted">—</span>
+        </div>
+        <h2 class="gameTitle">Kurdish Codenames</h2>
+        <p class="sub">Spymaster shows colors. Operatives should keep it OFF.</p>
       </div>
 
       <div class="topActions">
         <button id="newGame" class="btn primary">New Game</button>
         <button id="resetBoard" class="btn ghost">Reset (same board)</button>
 
-        <label class="switch">
+        <label class="switch" title="Spymaster view">
           <input type="checkbox" id="spymaster" />
           <span>Spymaster</span>
         </label>
+
+        <button id="changeProfile" class="btn ghost">Change Profile</button>
       </div>
     </header>
 
@@ -49,7 +102,7 @@
         <div class="clueRow">
           <div class="field">
             <label>Clue</label>
-            <input id="clueInput" type="text" placeholder="مثال: ئاو / شاخ / جنگ ..." />
+            <input id="clueInput" type="text" placeholder="مثال: ئاو / شاخ / جەنگ ..." />
           </div>
 
           <div class="field small">
@@ -88,10 +141,11 @@
     </div>
 
     <footer class="footer">
-      <small>Tip: Spymaster shows colors. Players should keep it OFF.</small>
+      <small>Tip: Operatives shouldn’t use Spymaster mode.</small>
     </footer>
   </main>
 
   <script src="app.js"></script>
 </body>
 </html>
+
